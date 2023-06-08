@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoppingListApp.MenuPage"
+             xmlns:local="clr-namespace:ShoppingListApp" 
+
+             BackgroundColor="{StaticResource CreamBrown}">
+
+    <ScrollView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!--NAVBAR-->
+            <Grid Grid.Row="0" BackgroundColor="{StaticResource BackgroundBrown}" Padding="10,10,10,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="1" Text="MiMi's List App" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10" Style="{StaticResource H1Label}"/>
+                <HorizontalStackLayout Grid.Column="0">
+                    <Button Text="Settings" Style="{StaticResource AppButton}"/>
+                    <Button Text="About" Style="{StaticResource AppButton}" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!--MAIN CONTAINER-->
+            <Grid Grid.Row="1" Margin="10,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="120"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Image Grid.Row="0" Source="catinbasket.png"></Image>
+                <Label Grid.Row="1" Text="Please select a list to open!" x:Name="GreetingLabel" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+                <StackLayout Grid.Row="2">
+                    <CollectionView x:Name="tablesList">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteTable" HorizontalOptions="Start"/>
+                                    <Grid Grid.Column="1" >
+                                        <Label Text="{Binding Name}" VerticalOptions="Center" Style="{StaticResource IndividualItemLabel}"/>
+                                        <Button Style="{StaticResource InvisibleButton}" Clicked="TableClicked"/>
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button Text="Create a new list" Style="{StaticResource AppButton}" Clicked="Btn_AddNewTable" Margin="7"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
+    </ScrollView>
+
+
+</ContentPage>

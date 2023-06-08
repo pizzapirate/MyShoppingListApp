@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoppingListApp.ListPage"
+             xmlns:local="clr-namespace:ShoppingListApp" BackgroundColor="{StaticResource CreamBrown}">
+    <ContentPage.Resources>
+        <local:BooleanToStrikethroughConverter x:Key="BooleanToStrikethroughConverter" />
+        <local:LabelColorConverter x:Key="LabelColorConverter"/>
+    </ContentPage.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ScrollView >
+            <StackLayout>
+                <Grid BackgroundColor="{StaticResource BackgroundBrown}" Padding="10,10,10,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" Text="List" x:Name="ListName" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10"/>
+                    <HorizontalStackLayout Grid.Column="1">
+                        <Button Text="Reorder" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>
+                        <Button Text="Complete" Style="{StaticResource AppButton}" Clicked="Btn_Complete"/>
+                        <Button Text="Menu" Style="{StaticResource AppButton}" Clicked="Btn_Menu"/>
+                    </HorizontalStackLayout>
+
+                </Grid>
+                <CollectionView x:Name="itemsList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Style="{StaticResource IndividualItemGrid}"
+                                  BackgroundColor="{Binding BasketStatus, Converter={StaticResource LabelColorConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteItem" HorizontalOptions="Start"/>
+                                <Grid Grid.Column="1">
+                                    <Label Grid.Column="1" Text="{Binding ItemName}" HorizontalOptions="Start" VerticalOptions="Center" Padding="0,0,0,0" 
+                                           Style="{StaticResource IndividualItemLabel}">
+                                        <Label.TextDecorations>
+                                            <Binding Path="BasketStatus" Converter="{StaticResource BooleanToStrikethroughConverter}" />
+                                        </Label.TextDecorations>
+                                    </Label>
+                                    <Button Style="{StaticResource InvisibleButton}" Clicked="LabelClicked" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                
+                <CollectionView x:Name="reorderItemsList" IsVisible="False">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Style="{StaticResource IndividualItemGrid}"
+                                  BackgroundColor="{Binding BasketStatus, Converter={StaticResource LabelColorConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteItem" HorizontalOptions="Start"/>
+                                <Grid Grid.Column="1">
+                                    <Label Grid.Column="1" Text="{Binding ItemName}" HorizontalOptions="Start" VerticalOptions="Center" Padding="0,0,0,0" 
+                                           Style="{StaticResource IndividualItemLabel}">
+                                        <Label.TextDecorations>
+                                            <Binding Path="BasketStatus" Converter="{StaticResource BooleanToStrikethroughConverter}" />
+                                        </Label.TextDecorations>
+                                    </Label>
+                                    <Button Style="{StaticResource InvisibleButton}" Clicked="ReorderLabelClicked"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
+        <Grid Margin="15" VerticalOptions="End" HorizontalOptions="End">
+            <HorizontalStackLayout x:Name="ReorderButtons" IsVisible="false">
+                <Button Style="{StaticResource AppButton}" Text="Up" Clicked="ReorderUp"/>
+                <Button Style="{StaticResource AppButton}" Text="Down" Clicked="ReorderDown"/>
+                <Button Style="{StaticResource AppButton}" Text="Save" Clicked="SaveReorderedList"/>
+            </HorizontalStackLayout>
+            <Button Style="{StaticResource AddButton}" Clicked="Btn_AddItem" x:Name="AddItemButton"/>
+        </Grid>
+    </Grid>
+</ContentPage>
