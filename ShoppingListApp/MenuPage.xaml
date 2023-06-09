@@ -14,17 +14,17 @@
             </Grid.RowDefinitions>
             
             <!--NAVBAR-->
-            <Grid Grid.Row="0" BackgroundColor="{StaticResource BackgroundBrown}" Padding="10,10,10,10">
+            <Grid Grid.Row="0" Style="{StaticResource NavBarGrid}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="1" Text="MiList" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10" Style="{StaticResource H1Label}"/>
-                <HorizontalStackLayout Grid.Column="0">
+                <Label Grid.Column="0" Text="MiList" Style="{StaticResource H1Label}"/>
+                <HorizontalStackLayout Grid.Column="1">
                     <Button Text="Settings" Style="{StaticResource AppButton}"/>
                     <Button Text="About" Style="{StaticResource AppButton}" />
                 </HorizontalStackLayout>

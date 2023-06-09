@@ -13,23 +13,26 @@
         </Grid.RowDefinitions>
         <ScrollView >
             <StackLayout>
-                <Grid BackgroundColor="{StaticResource BackgroundBrown}" Padding="10,10,10,10">
+                
+                <!--NAVBAR-->
+                <Grid Style="{StaticResource NavBarGrid}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Column="0" Text="List" x:Name="ListName" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10"/>
+                    <Label Grid.Column="0" Text="List" x:Name="ListName" Style="{StaticResource H1Label}"/>
                     <HorizontalStackLayout Grid.Column="1">
-                        <Button Text="Reorder" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>
-                        <Button Text="Complete" Style="{StaticResource AppButton}" Clicked="Btn_Complete"/>
+                        <Button Text="Move" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>
+                        <Button Text="Finish" Style="{StaticResource AppButton}" Clicked="Btn_Complete"/>
                         <Button Text="Menu" Style="{StaticResource AppButton}" Clicked="Btn_Menu"/>
                     </HorizontalStackLayout>
-
                 </Grid>
+                
+                
                 <CollectionView x:Name="itemsList">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>

@@ -35,8 +35,8 @@ public partial class MenuPage : ContentPage
     }
     private void GoToListPage(object sender, EventArgs e)
     {
-		ListPage next = new();
-		App.Current.MainPage = next;
+        ListPage next = new();
+        App.Current.MainPage = next;
     }
     private void TableClicked(object sender, EventArgs e)
     {

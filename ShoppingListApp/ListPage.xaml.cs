@@ -10,10 +10,10 @@ public partial class ListPage : ContentPage
 {
     private object selectedReorderItem;
     private List<ShoppingListItem> _tempReorderList;
-    public List<ShoppingListItem> tempReorderList
+    public List<ShoppingListItem> TempReorderList
     {
         get { return _tempReorderList; }
-        set { _tempReorderList = value; OnPropertyChanged(nameof(tempReorderList)); }
+        set { _tempReorderList = value; OnPropertyChanged(nameof(TempReorderList)); }
     }
     private bool isReorderModeActive;
 	public ListPage()
@@ -79,14 +79,14 @@ public partial class ListPage : ContentPage
         await RefreshItemsList();
     }
     private void Btn_Menu(object sender, EventArgs e)
-    {
-        MenuPage next = new MenuPage();
+    {   
+        MenuPage next = new();
         App.Current.MainPage = next;
     }
     private async void Btn_Complete(object sender, EventArgs e) // THIS BUTTON RESETS A LIST. 
     {
         // Find out if there are any items that are not in the basket 
-        if (App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable && x.BasketStatus == false).Count() >= 1)
+        if (App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable && x.BasketStatus == false).Any())
         {
             string action = await DisplayActionSheet("What to do with items not ticked off?", "Cancel", null, "Delete", "Keep");
             switch(action)
@@ -111,23 +111,24 @@ public partial class ListPage : ContentPage
     //-----------REORDER SECTION--------------//
     private async void Btn_Reorder(object sender, EventArgs e)
     {   
-        if (isReorderModeActive) { await CreateToast("Reorder Mode Deactivated"); isReorderModeActive = false; }
-        else { await CreateToast("Reorder Mode Activated"); isReorderModeActive = true; }
+        if (isReorderModeActive) { await CreateToast("Move Mode Deactivated"); isReorderModeActive = false; }
+        else { await CreateToast("Move Mode Activated"); isReorderModeActive = true; }
 
         ReorderButtons.IsVisible = !ReorderButtons.IsVisible;
         AddItemButton.IsVisible = !AddItemButton.IsVisible;
 
         reorderItemsList.IsVisible = !reorderItemsList.IsVisible;
         itemsList.IsVisible = !itemsList.IsVisible;
-        tempReorderList = await Task.Run(() => App.ShoppingListRepository.GetAllAsync());
-        reorderItemsList.ItemsSource = tempReorderList;
+        TempReorderList = await Task.Run(() => App.ShoppingListRepository.GetAllAsync());
+        reorderItemsList.ItemsSource = TempReorderList;
     }
     private void ReorderLabelClicked(object sender, EventArgs e)
     {
         Grid buttonGridColumn;
         Grid individualItemGrid;
         if (selectedReorderItem is Button selectedItem) // Remove color styling if an item is selected
-        {
+        {   
+            // For future, IF item is basketstatus = true, set color to basket status color
             buttonGridColumn = selectedItem.Parent as Grid;
             individualItemGrid = buttonGridColumn.Parent as Grid;
             individualItemGrid.BackgroundColor = Color.FromArgb("#6FFFA8"); // Minty Green
@@ -137,7 +138,7 @@ public partial class ListPage : ContentPage
         {
             buttonGridColumn = btn.Parent as Grid;
             individualItemGrid = buttonGridColumn.Parent as Grid;
-            individualItemGrid.BackgroundColor = Color.FromArgb("#FD5564");
+            individualItemGrid.BackgroundColor = Color.FromArgb("#FD5564"); // Tinder Red
             selectedReorderItem = sender;
         }
     }
@@ -148,7 +149,7 @@ public partial class ListPage : ContentPage
             ShoppingListItem selectedItem = GetItemFromSender(selectedReorderItem);
             MoveItemDown(selectedItem);
             reorderItemsList.ItemsSource = new List<ShoppingListItem>();
-            reorderItemsList.ItemsSource = tempReorderList;// Refresh the list
+            reorderItemsList.ItemsSource = TempReorderList;// Refresh the list
         }
     }
     private void ReorderUp(object sender, EventArgs e)
@@ -158,26 +159,26 @@ public partial class ListPage : ContentPage
             ShoppingListItem selectedItem = GetItemFromSender(selectedReorderItem);
             MoveItemUp(selectedItem);
             reorderItemsList.ItemsSource = new List<ShoppingListItem>();
-            reorderItemsList.ItemsSource = tempReorderList;// Refresh the list
+            reorderItemsList.ItemsSource = TempReorderList;// Refresh the list
         }
     }
     private void MoveItemUp(ShoppingListItem selectedItem)
     {
-        int selectedIndex = tempReorderList.IndexOf(selectedItem);
+        int selectedIndex = TempReorderList.IndexOf(selectedItem);
         if (selectedIndex != 0) // Check to see if it isn't already at top of list
         {
-            tempReorderList.RemoveAt(selectedIndex);
-            tempReorderList.Insert(selectedIndex - 1, selectedItem);
+            TempReorderList.RemoveAt(selectedIndex);
+            TempReorderList.Insert(selectedIndex - 1, selectedItem);
         }
 
     }
     private void MoveItemDown(ShoppingListItem selectedItem)
     {
-        int selectedIndex = tempReorderList.IndexOf(selectedItem);
-        if (selectedIndex != tempReorderList.Count - 1)
+        int selectedIndex = TempReorderList.IndexOf(selectedItem);
+        if (selectedIndex != TempReorderList.Count - 1)
         {
-            tempReorderList.RemoveAt(selectedIndex);
-            tempReorderList.Insert(selectedIndex + 1, selectedItem);
+            TempReorderList.RemoveAt(selectedIndex);
+            TempReorderList.Insert(selectedIndex + 1, selectedItem);
         }
     }
     private async void SaveReorderedList(object sender, EventArgs e)
@@ -185,10 +186,10 @@ public partial class ListPage : ContentPage
         // delete all of the old stuff
         App.ListTableRepository.DeleteForReorder();
         // add tempReorderList to db
-        App.ShoppingListRepository.AddRange(tempReorderList);
+        App.ShoppingListRepository.AddRange(TempReorderList);
         await RefreshItemsList();
         // clear tempReorderList
-        tempReorderList = null;
+        TempReorderList = null;
         Btn_Reorder(sender, e);
     }
     //-----------MISC SECTION----------------//
@@ -202,12 +203,12 @@ public partial class ListPage : ContentPage
         var toast = Toast.Make(text, duration, fontSize);
         await toast.Show(cancellationTokenSource.Token);
     }
-    protected override bool OnBackButtonPressed()
+    protected override bool OnBackButtonPressed() // FOR HANDLING ANDROID BACK BUTTON
     {
-        MenuPage next = new MenuPage();
+        MenuPage next = new();
         App.Current.MainPage = next;
         return true;
-    } // FOR HANDLING ANDROID BACK BUTTON
+    } 
     //private void CheckBoxClicked(object sender, EventArgs e)
     //{
     //    ShoppingListItem item = GetItemFromSender(sender);
@@ -240,7 +241,7 @@ public partial class ListPage : ContentPage
 public class BooleanToStrikethroughConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
+    {   
         if (value is bool isStrikethrough)
         {
             return isStrikethrough ? TextDecorations.Strikethrough : TextDecorations.None;
@@ -262,7 +263,7 @@ public class LabelColorConverter : IValueConverter
         {
             // Set the color based on the boolean value
             Color falseColor = Color.FromArgb("#6FFFA8"); // MintyGreen
-            Color trueColor = Color.FromArgb("#649979"); // 
+            Color trueColor = Color.FromArgb("#429964"); // BasketStatus = true value. 
 
             return boolValue ? trueColor : falseColor;
         }
