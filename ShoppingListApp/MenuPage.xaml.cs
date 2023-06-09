@@ -15,12 +15,14 @@ public partial class MenuPage : ContentPage
 	private async void Btn_AddNewTable(object sender, EventArgs e)
 	{
 		string result = await DisplayPromptAsync("Create a new list", "Give it a name!");
-        ListTableEntry listTableEntry = new()
+        if (!string.IsNullOrEmpty(result))
         {
-            Name = result
-        };
-        App.ListTableRepository.Add(listTableEntry);
-        UpdateListOfTables();
+            App.ListTableRepository.Add(new ListTableEntry
+            {
+                Name = result
+            });
+            UpdateListOfTables();
+        }
     }
 	private void UpdateListOfTables()
 	{	

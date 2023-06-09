@@ -23,7 +23,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="1" Text="MiMi's List App" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10" Style="{StaticResource H1Label}"/>
+                <Label Grid.Column="1" Text="MiList" FontSize="24" HorizontalOptions="Start" VerticalOptions="Center" Padding="10" Style="{StaticResource H1Label}"/>
                 <HorizontalStackLayout Grid.Column="0">
                     <Button Text="Settings" Style="{StaticResource AppButton}"/>
                     <Button Text="About" Style="{StaticResource AppButton}" />
@@ -38,7 +38,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Image Grid.Row="0" Source="catinbasket.png"></Image>
+                <Frame  Grid.Row="0" WidthRequest="100" HeightRequest="100"
+                       CornerRadius="10" HorizontalOptions="Center" IsClippedToBounds="True"
+                       Padding="0" Margin="0">
+                    <Image Source="catinbasket.jpg"></Image>
+                </Frame>
+
                 <Label Grid.Row="1" Text="Please select a list to open!" x:Name="GreetingLabel" HorizontalOptions="Center" VerticalOptions="Center"/>
 
                 <StackLayout Grid.Row="2">
