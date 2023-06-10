@@ -13,6 +13,6 @@ public partial class App : Application
 
 		ShoppingListRepository = shoppingListRepository;
 		ListTableRepository = listTableRepository;
-		MainPage = new MenuPage();
+		MainPage = new AppShell();
 	}
 }

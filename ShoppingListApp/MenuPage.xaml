@@ -4,7 +4,8 @@
              x:Class="ShoppingListApp.MenuPage"
              xmlns:local="clr-namespace:ShoppingListApp" 
 
-             BackgroundColor="{StaticResource CreamBrown}">
+             BackgroundColor="{StaticResource CreamBrown}"
+             Shell.NavBarIsVisible="false">
 
     <ScrollView>
         <Grid>

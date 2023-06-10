@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShoppingListApp.ListPage"
-             xmlns:local="clr-namespace:ShoppingListApp" BackgroundColor="{StaticResource CreamBrown}">
+             xmlns:local="clr-namespace:ShoppingListApp" BackgroundColor="{StaticResource CreamBrown}"
+             Shell.NavBarIsVisible="false">
     <ContentPage.Resources>
         <local:BooleanToStrikethroughConverter x:Key="BooleanToStrikethroughConverter" />
         <local:LabelColorConverter x:Key="LabelColorConverter"/>

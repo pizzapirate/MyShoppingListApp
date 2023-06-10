@@ -78,10 +78,12 @@ public partial class ListPage : ContentPage
         App.ShoppingListRepository.Update(item);
         await RefreshItemsList();
     }
-    private void Btn_Menu(object sender, EventArgs e)
+    private void Btn_Menu(object sender, EventArgs e) // Navigates to the menu page
     {   
-        MenuPage next = new();
-        App.Current.MainPage = next;
+        Navigation.PopAsync();
+        // OLD CODE FOR BAD EXPERIENCE AND WHITE SCREEN INBETWEEN NAVIGATION
+        //MenuPage next = new();
+        //App.Current.MainPage = next;
     }
     private async void Btn_Complete(object sender, EventArgs e) // THIS BUTTON RESETS A LIST. 
     {
