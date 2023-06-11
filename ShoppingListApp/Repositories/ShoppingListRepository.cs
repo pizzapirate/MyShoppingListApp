@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ShoppingListApp.Models;
+using System.Collections.ObjectModel;
 
 namespace ShoppingListApp.Repositories
 {
@@ -34,7 +35,7 @@ namespace ShoppingListApp.Repositories
         {
             conn.Insert(item);
         }
-        public void AddRange(List<ShoppingListItem> items) 
+        public void AddRange(ObservableCollection<ShoppingListItem> items) 
         {
             conn.InsertAll(items);
         }

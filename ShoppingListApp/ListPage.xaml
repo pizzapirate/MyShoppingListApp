@@ -32,8 +32,8 @@
                         <Button Text="Menu" Style="{StaticResource AppButton}" Clicked="Btn_Menu"/>
                     </HorizontalStackLayout>
                 </Grid>
-                
-                
+
+
                 <CollectionView x:Name="itemsList">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
