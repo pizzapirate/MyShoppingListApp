@@ -11,7 +11,7 @@ namespace ShoppingListApp;
 
 public partial class ListPage : ContentPage, INotifyPropertyChanged
 {
-    private object selectedReorderItem;
+    private ShoppingListItem selectedReorderItem;
     private ObservableCollection<ShoppingListItem> viewData;
     public ObservableCollection<ShoppingListItem> ViewData
     {
@@ -19,7 +19,7 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         set { viewData = value; OnPropertyChanged(nameof(ViewData)); }
     }
     private bool isReorderModeActive;
-	public ListPage()
+    public ListPage()
 	{   
 		InitializeComponent();
         ViewData = App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable).ToObservableCollection();
@@ -85,7 +85,7 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
     {   
         Navigation.PopAsync();
     }
-    private async void Btn_Complete(object sender, EventArgs e) // THIS BUTTON RESETS A LIST. 
+    private void Btn_Complete(object sender, EventArgs e) // THIS BUTTON RESETS A LIST - CURRENTLY NOT USED 
     {
         //// Find out if there are any items that are not in the basket 
         //if (App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable && x.BasketStatus == false).Any())
@@ -112,78 +112,67 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
     private async void Btn_Reorder(object sender, EventArgs e)
     {   
         // Display Toast
-        if (isReorderModeActive) { await CreateToast("Move Mode Deactivated"); isReorderModeActive = false; }
-        else { await CreateToast("Move Mode Activated"); isReorderModeActive = true; }
+        if (isReorderModeActive) 
+        {   
+            if (selectedReorderItem != null)
+            {
+                await CreateToast("Changes saved.");
+            } else { await CreateToast("No changes made."); }
+            isReorderModeActive = false; SaveReorderedList(sender, e); 
+        }
+        else { await CreateToast("Drag an item to move it!"); isReorderModeActive = true; }
         //Display Buttons
         ReorderButtons.IsVisible = !ReorderButtons.IsVisible;
         AddItemButton.IsVisible = !AddItemButton.IsVisible;
 
+        reorderItemsList.ItemsSource = ViewData;
         reorderItemsList.IsVisible = !reorderItemsList.IsVisible;
         itemsList.IsVisible = !itemsList.IsVisible;
-        reorderItemsList.ItemsSource = ViewData;
+
     }
     private void ReorderLabelClicked(object sender, EventArgs e)
     {
-        Grid buttonGridColumn;
-        Grid individualItemGrid;
-        if (selectedReorderItem is Button selectedItem) // Remove color styling if an item is selected
-        {   
-            // For future, IF item is basketstatus = true, set color to basket status color
-            buttonGridColumn = selectedItem.Parent as Grid;
-            individualItemGrid = buttonGridColumn.Parent as Grid;
-            individualItemGrid.BackgroundColor = Color.FromArgb("#6FFFA8"); // Minty Green
-            selectedReorderItem = null;
-        }
-        if (sender != selectedReorderItem && sender is Button btn)
-        {
-            buttonGridColumn = btn.Parent as Grid;
-            individualItemGrid = buttonGridColumn.Parent as Grid;
-            individualItemGrid.BackgroundColor = Color.FromArgb("#FD5564"); // Tinder Red
-            selectedReorderItem = sender;
-        }
-    }
-    private void ReorderDown(object sender, EventArgs e)
-    {
-        if (selectedReorderItem is Button)
-        {
-            ShoppingListItem selectedItem = GetItemFromSender(selectedReorderItem);
-            MoveItemDown(selectedItem);
-        }
-    }
-    private void ReorderUp(object sender, EventArgs e)
-    {
-        if (selectedReorderItem is Button)
-        {
-            ShoppingListItem selectedItem = GetItemFromSender(selectedReorderItem);
-            MoveItemUp(selectedItem);
-        }
-    }
-    private void MoveItemUp(ShoppingListItem selectedItem)
-    {
-        int selectedIndex = ViewData.IndexOf(selectedItem);
-        if (selectedIndex != 0) // Check to see if it isn't already at top of list
-        {
-            ViewData.RemoveAt(selectedIndex);
-            ViewData.Insert(selectedIndex - 1, selectedItem);
-        }
-    }
-    private void MoveItemDown(ShoppingListItem selectedItem)
-    {
-        int selectedIndex = ViewData.IndexOf(selectedItem);
-        if (selectedIndex != ViewData.Count - 1)
-        {
-            ViewData.RemoveAt(selectedIndex);
-            ViewData.Insert(selectedIndex + 1, selectedItem);
-        }
-    }
+        //Grid buttonGridColumn;
+        //Grid individualItemGrid;
+        //if (selectedReorderItem is Button selectedItem) // Remove color styling if an item is selected
+        //{   
+        //    // For future, IF item is basketstatus = true, set color to basket status color
+        //    buttonGridColumn = selectedItem.Parent as Grid;
+        //    individualItemGrid = buttonGridColumn.Parent as Grid;
+        //    individualItemGrid.BackgroundColor = Color.FromArgb("#6FFFA8"); // Minty Green
+        //    selectedReorderItem = null;
+        //}
+        //if (sender != selectedReorderItem && sender is Button btn)
+        //{
+        //    buttonGridColumn = btn.Parent as Grid;
+        //    individualItemGrid = buttonGridColumn.Parent as Grid;
+        //    individualItemGrid.BackgroundColor = Color.FromArgb("#FD5564"); // Tinder Red
+        //    selectedReorderItem = sender;
+        //}
+    } // NOT USED CURRENTLY / COMMENTED OUT
     private void SaveReorderedList(object sender, EventArgs e)
     {
         // delete all of the old stuff
         App.ListTableRepository.DeleteForReorder();
         // Update db
         App.ShoppingListRepository.AddRange(ViewData);
-        Btn_Reorder(sender, e);
     }
+    private void ItemDragStarting(object sender, DragStartingEventArgs e)
+    {   // Change color of label, if u want
+        DragGestureRecognizer dataGestureRecognizer = sender as DragGestureRecognizer;
+        selectedReorderItem = dataGestureRecognizer.BindingContext as ShoppingListItem;
+    }
+    private void ItemDrop(object sender, DropEventArgs e)
+    {
+        DropGestureRecognizer dataGestureRecognizer = sender as DropGestureRecognizer;
+        ShoppingListItem itemToBeDroppedOn = dataGestureRecognizer.BindingContext as ShoppingListItem;
+        int dropIndex = ViewData.IndexOf(itemToBeDroppedOn);
+        int selectedItemIndex = ViewData.IndexOf(selectedReorderItem);
+
+        ViewData.RemoveAt(selectedItemIndex);
+        ViewData.Insert(dropIndex, selectedReorderItem);
+    }
+
     //-----------MISC SECTION----------------//
     private async Task CreateToast(string message)
     {
@@ -200,40 +189,6 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         Navigation.PopAsync();
         return true;
     }
-    //public new event PropertyChangedEventHandler PropertyChanged;
-
-    //protected override void OnPropertyChanged(string propertyName)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
-    //private void CheckBoxClicked(object sender, EventArgs e)
-    //{
-    //    ShoppingListItem item = GetItemFromSender(sender);
-    //    item.BasketStatus = !item.BasketStatus;
-    //    App.ShoppingListRepository.Update(item);
-    //    RefreshItemsList();
-    //    CheckBox cb = sender as CheckBox;
-    //    cb.IsChecked = item.BasketStatus;
-    //} // UNUSED, REMOVE
-    //private void UpdateCheckedBox(object sender, EventArgs e)
-    //{
-    //    CheckBox cb = sender as CheckBox;
-    //    ShoppingListItem item = GetItemFromSender(sender);
-    //    item.BasketStatus = !item.BasketStatus;
-    //    App.ShoppingListRepository.Update(item);
-    //    RefreshItemsList();
-
-    //    //if (cb.IsChecked == item.BasketStatus)
-    //    //{
-    //    //    // then good, we are good. 
-    //    //}
-    //    //else // if they are different!!! 
-    //    //{
-    //    //    item.BasketStatus = cb.IsChecked;
-    //    //    App.ShoppingListRepository.Update(item);
-    //    //    RefreshItemsList();
-    //    //}
-    //} // UNUSED, REMOVE 
 }
 public class BooleanToStrikethroughConverter : IValueConverter
 {

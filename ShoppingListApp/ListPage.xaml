@@ -67,7 +67,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteItem" HorizontalOptions="Start"/>
+                                <Button Grid.Column="0" Style="{StaticResource DeleteButton}" HorizontalOptions="Start"/>
                                 <Grid Grid.Column="1">
                                     <Label Grid.Column="1" Text="{Binding ItemName}" HorizontalOptions="Start" VerticalOptions="Center" Padding="0,0,0,0" 
                                            Style="{StaticResource IndividualItemLabel}">
@@ -75,8 +75,12 @@
                                             <Binding Path="BasketStatus" Converter="{StaticResource BooleanToStrikethroughConverter}" />
                                         </Label.TextDecorations>
                                     </Label>
-                                    <Button Style="{StaticResource InvisibleButton}" Clicked="ReorderLabelClicked"/>
+                                    <!--<Button Style="{StaticResource InvisibleButton}" Clicked="ReorderLabelClicked"/>-->
                                 </Grid>
+                                <Grid.GestureRecognizers>
+                                    <DragGestureRecognizer CanDrag="True" DragStarting="ItemDragStarting"/>
+                                    <DropGestureRecognizer AllowDrop="True" Drop="ItemDrop"/>
+                                </Grid.GestureRecognizers>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -85,9 +89,7 @@
         </ScrollView>
         <Grid Margin="15" VerticalOptions="End" HorizontalOptions="End">
             <HorizontalStackLayout x:Name="ReorderButtons" IsVisible="false">
-                <Button Style="{StaticResource AppButton}" Text="Up" Clicked="ReorderUp"/>
-                <Button Style="{StaticResource AppButton}" Text="Down" Clicked="ReorderDown"/>
-                <Button Style="{StaticResource AppButton}" Text="Save" Clicked="SaveReorderedList"/>
+                <Button Style="{StaticResource AppButton}" Text="Save Changes" Clicked="Btn_Reorder" Padding="10" BackgroundColor="{StaticResource TinderRed}"/>
             </HorizontalStackLayout>
             <Button Style="{StaticResource AddButton}" Clicked="Btn_AddItem" x:Name="AddItemButton"/>
         </Grid>
