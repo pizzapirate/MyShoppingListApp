@@ -28,7 +28,7 @@
                     <Label Grid.Column="0" Text="List" x:Name="ListName" Style="{StaticResource H1Label}"/>
                     <HorizontalStackLayout Grid.Column="1">
                         <Button Text="Move" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>
-                        <Button Text="Finish" Style="{StaticResource AppButton}" Clicked="Btn_Complete"/>
+                        <Button Text="Edit" Style="{StaticResource AppButton}" Clicked="Btn_Edit"/>
                         <Button Text="Menu" Style="{StaticResource AppButton}" Clicked="Btn_Menu"/>
                     </HorizontalStackLayout>
                 </Grid>
@@ -91,6 +91,7 @@
             <HorizontalStackLayout x:Name="ReorderButtons" IsVisible="false">
                 <Button Style="{StaticResource AppButton}" Text="Save Changes" Clicked="Btn_Reorder" Padding="10" BackgroundColor="{StaticResource TinderRed}"/>
             </HorizontalStackLayout>
+            <Button Style="{StaticResource AppButton}" x:Name="ExitEditModeButton" Text="Exit Edit Mode" Clicked="Btn_Edit" Padding="10" BackgroundColor="{StaticResource TinderRed}" IsVisible="false"/>
             <Button Style="{StaticResource AddButton}" Clicked="Btn_AddItem" x:Name="AddItemButton"/>
         </Grid>
     </Grid>

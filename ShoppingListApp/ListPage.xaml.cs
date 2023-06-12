@@ -19,14 +19,23 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         set { viewData = value; OnPropertyChanged(nameof(ViewData)); }
     }
     private bool isReorderModeActive;
+    private bool isEditModeActive;
     public ListPage()
 	{   
 		InitializeComponent();
         ViewData = App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable).ToObservableCollection();
         itemsList.ItemsSource = ViewData;
-        this.BindingContext = this;
         ListName.Text = App.ListTableRepository.GetTableName(App.SelectedTable);
+        this.BindingContext = this;
     }
+    //private async Task InitializeDataAsync()
+    //{
+    //    var data = await App.ShoppingListRepository.GetAllAsync();
+    //    ViewData = data.ToObservableCollection();
+    //    itemsList.ItemsSource = ViewData;
+    //    ListName.Text = App.ListTableRepository.GetTableName(App.SelectedTable);
+    //}
+    //-----------BASIC FUNCTIONS SECTION--------// // Performance isn't any better, but negates .NET MAUI shell animation. So, not good. 
     private async void Btn_AddItem(object sender, EventArgs e)
     {
         string result = await DisplayPromptAsync("Add a new item", "", "Save", "Cancel", "Enter item here");
@@ -68,67 +77,98 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         return item;
     }
     private void LabelClicked(object sender, EventArgs e)
-    {
-        ShoppingListItem item = GetItemFromSender(sender);
-        item.BasketStatus = !item.BasketStatus;
-        App.ShoppingListRepository.Update(item);
-        // Update ViewData
-        int index = ViewData.IndexOf(item);
-        if (index != -1)
+    {   
+        if (isEditModeActive)
         {
-            ViewData[index] = item;
+            EditItem(GetItemFromSender(sender));
         }
-
-        //await RefreshItemsList();
+        else
+        {
+            ShoppingListItem item = GetItemFromSender(sender);
+            item.BasketStatus = !item.BasketStatus;
+            // Update db
+            App.ShoppingListRepository.Update(item);
+            // Update ViewData
+            int index = ViewData.IndexOf(item);
+            if (index != -1)
+            {
+                ViewData[index] = item;
+            }
+        }
     }
     private void Btn_Menu(object sender, EventArgs e) // Navigates to the menu page
     {   
         Navigation.PopAsync();
     }
-    private void Btn_Complete(object sender, EventArgs e) // THIS BUTTON RESETS A LIST - CURRENTLY NOT USED 
+    //-----------EDIT SECTION-----------------//
+    private async void Btn_Edit(object sender, EventArgs e)
+    {   
+        if (isReorderModeActive)
+        {
+            await CreateToast("Cannot edit whilst moving items!");
+        }
+        else
+        {
+            if (isEditModeActive)
+            {
+                ExitEditModeButton.IsVisible = false;
+                AddItemButton.IsVisible = true;
+                await CreateSnackbar("Edit mode deactivated.");
+                isEditModeActive = false;
+            }
+            else
+            {
+                ExitEditModeButton.IsVisible = true;
+                AddItemButton.IsVisible = false;
+                await CreateSnackbar("Select an item to edit!");
+                isEditModeActive = true;
+            }
+        }
+    }
+    private async void EditItem(ShoppingListItem item)
     {
-        //// Find out if there are any items that are not in the basket 
-        //if (App.ShoppingListRepository.GetAll().Where(x => x.TableId == App.SelectedTable && x.BasketStatus == false).Any())
-        //{
-        //    string action = await DisplayActionSheet("What to do with items not ticked off?", "Cancel", null, "Delete", "Keep");
-        //    switch(action)
-        //    {
-        //        case "Keep":
-        //            // Delete all items where selectedtable and basketstatus = true
-        //            App.ShoppingListRepository.DeleteBasketStatusTrueItems(App.SelectedTable);
-        //            break;
-        //        case "Delete":
-        //            // delete all where selectedtable 
-        //            App.ShoppingListRepository.DeleteEntireList(App.SelectedTable);
-        //            break;
-        //    }
-        //}
-        //else //  Else, if all items have basketstatus = true:
-        //{
-        //    App.ShoppingListRepository.DeleteEntireList(App.SelectedTable);
-        //}
+        string result = await DisplayPromptAsync("Edit", "", "Save", "Cancel", item.ItemName);
+        if (!string.IsNullOrEmpty(result))
+        {   
+            item.ItemName = result;
+            // Update db
+            App.ShoppingListRepository.Update(item);
+            // Update ViewData
+            int index = ViewData.IndexOf(item);
+            if (index != -1)
+            {
+                ViewData[index] = item;
+            }
+        }
     }
     //-----------REORDER SECTION--------------//
     private async void Btn_Reorder(object sender, EventArgs e)
     {   
-        // Display Toast
-        if (isReorderModeActive) 
-        {   
-            if (selectedReorderItem != null)
-            {
-                await CreateToast("Changes saved.");
-            } else { await CreateToast("No changes made."); }
-            isReorderModeActive = false; SaveReorderedList(sender, e); 
+        if (isEditModeActive)
+        {
+            await CreateToast("Cannot move whilst editing items!");
         }
-        else { await CreateToast("Drag an item to move it!"); isReorderModeActive = true; }
-        //Display Buttons
-        ReorderButtons.IsVisible = !ReorderButtons.IsVisible;
-        AddItemButton.IsVisible = !AddItemButton.IsVisible;
+        else
+        {
+            // Display Toast
+            if (isReorderModeActive)
+            {
+                if (selectedReorderItem != null)
+                {
+                    await CreateSnackbar("Changes saved.");
+                }
+                else { await CreateToast("No changes made."); }
+                isReorderModeActive = false; SaveReorderedList(sender, e);
+            }
+            else { await CreateSnackbar("Drag an item to move it!"); isReorderModeActive = true; }
+            //Display Buttons
+            ReorderButtons.IsVisible = !ReorderButtons.IsVisible;
+            AddItemButton.IsVisible = !AddItemButton.IsVisible;
 
-        reorderItemsList.ItemsSource = ViewData;
-        reorderItemsList.IsVisible = !reorderItemsList.IsVisible;
-        itemsList.IsVisible = !itemsList.IsVisible;
-
+            reorderItemsList.ItemsSource = ViewData;
+            reorderItemsList.IsVisible = !reorderItemsList.IsVisible;
+            itemsList.IsVisible = !itemsList.IsVisible;
+        }
     }
     private void ReorderLabelClicked(object sender, EventArgs e)
     {
@@ -183,6 +223,29 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         double fontSize = 14;
         var toast = Toast.Make(text, duration, fontSize);
         await toast.Show(cancellationTokenSource.Token);
+    }
+    private async Task CreateSnackbar(string message)
+    {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        var snackbarOptions = new SnackbarOptions
+        {
+            BackgroundColor = Color.FromArgb("#ffa86f"),
+            //ActionButtonTextColor = Colors.Yellow,
+            CornerRadius = new CornerRadius(10),
+            //Font = Font.SystemFontOfSize(14),
+            //ActionButtonFont = Font.SystemFontOfSize(14),
+            //CharacterSpacing = 0.5
+        };
+
+        string text = message;
+        string actionButtonText = "Dismiss";
+        //Action action = async () => await DisplayAlert("Snackbar ActionButton Tapped", "The user has tapped the Snackbar ActionButton", "OK");
+        TimeSpan duration = TimeSpan.FromSeconds(3);
+
+        var snackbar = Snackbar.Make(text, null, actionButtonText, duration, snackbarOptions);
+
+        await snackbar.Show(cancellationTokenSource.Token);
     }
     protected override bool OnBackButtonPressed() // FOR HANDLING ANDROID BACK BUTTON
     {
