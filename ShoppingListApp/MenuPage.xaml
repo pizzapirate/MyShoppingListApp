@@ -56,14 +56,14 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
-                                        <!--<ColumnDefinition Width="Auto"/>-->
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
                                     <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteTable" HorizontalOptions="Start"/>
                                     <Grid Grid.Column="1" >
                                         <Label Text="{Binding Name}" VerticalOptions="Center" Style="{StaticResource IndividualItemLabel}"/>
                                     </Grid>
-                                    <!--<ActivityIndicator Grid.Column="2" IsRunning="true" IsVisible="False" Color="{StaticResource PastelPurple}" x:Name="activityIndicator"/>-->
+                                    <ActivityIndicator Margin="5,0" Grid.Column="2" IsRunning="true" IsVisible="False" Color="{StaticResource PastelPurple}" x:Name="activityIndicator"/>
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="TableClicked"/>
                                     </Grid.GestureRecognizers>

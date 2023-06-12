@@ -7,6 +7,7 @@ namespace ShoppingListApp;
 
 public partial class MenuPage : ContentPage
 {
+    Grid selectedTable;
 	public MenuPage()
 	{   
 		InitializeComponent();
@@ -35,10 +36,12 @@ public partial class MenuPage : ContentPage
     }
     private void TableClicked(object sender, TappedEventArgs e)
     {
-        Grid grid = sender as Grid;
-        ListTableEntry table = grid.BindingContext as ListTableEntry;
+        selectedTable = sender as Grid;
+        ListTableEntry table = selectedTable.BindingContext as ListTableEntry;
         App.SelectedTable = table.Id;
         // Open ListPage and display all items where tableId = app.selectedtable
+        ActivityIndicator activityIndicator = selectedTable.FindByName<ActivityIndicator>("activityIndicator");
+        activityIndicator.IsVisible = true;
         ListPage next = new();
         Navigation.PushAsync(next);
     }
@@ -64,6 +67,15 @@ public partial class MenuPage : ContentPage
             double fontSize = 14;
             var toast = Toast.Make(text, duration, fontSize);
             await toast.Show(cancellationTokenSource.Token);
+        }
+    }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (selectedTable != null)
+        {
+            ActivityIndicator activityIndicator = selectedTable.FindByName<ActivityIndicator>("activityIndicator");
+            activityIndicator.IsVisible = false;
         }
     }
 }
