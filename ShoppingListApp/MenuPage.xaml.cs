@@ -33,13 +33,13 @@ public partial class MenuPage : ContentPage
             GreetingLabel.Text = "Oh no! You don't have any lists to display!";
         } else { GreetingLabel.Text = "Please select a list to open!"; }
     }
-    private void TableClicked(object sender, EventArgs e)
-    {   
-        ListTableEntry table = GetItemFromSender(sender);
+    private void TableClicked(object sender, TappedEventArgs e)
+    {
+        Grid grid = sender as Grid;
+        ListTableEntry table = grid.BindingContext as ListTableEntry;
         App.SelectedTable = table.Id;
         // Open ListPage and display all items where tableId = app.selectedtable
         ListPage next = new();
-        //App.Current.MainPage = next; // OLD WAY OF NAVIGATING BETWEEN PAGES WITHOUT USING APP.SHELL. CAUSES WHITE SCREEN INBETWEEN NAVIGATION, BAD VERY BAD
         Navigation.PushAsync(next);
     }
     private ListTableEntry GetItemFromSender(object sender)

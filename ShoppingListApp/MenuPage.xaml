@@ -46,7 +46,8 @@
                 </Frame>
 
                 <Label Grid.Row="1" Text="Please select a list to open!" x:Name="GreetingLabel" HorizontalOptions="Center" VerticalOptions="Center"/>
-
+                
+                <!--LIST OF TABLES-->
                 <StackLayout Grid.Row="2">
                     <CollectionView x:Name="tablesList">
                         <CollectionView.ItemTemplate>
@@ -55,13 +56,17 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
+                                        <!--<ColumnDefinition Width="Auto"/>-->
                                     </Grid.ColumnDefinitions>
 
                                     <Button Grid.Column="0" Style="{StaticResource DeleteButton}" Clicked="Btn_DeleteTable" HorizontalOptions="Start"/>
                                     <Grid Grid.Column="1" >
                                         <Label Text="{Binding Name}" VerticalOptions="Center" Style="{StaticResource IndividualItemLabel}"/>
-                                        <Button Style="{StaticResource InvisibleButton}" Clicked="TableClicked"/>
                                     </Grid>
+                                    <!--<ActivityIndicator Grid.Column="2" IsRunning="true" IsVisible="False" Color="{StaticResource PastelPurple}" x:Name="activityIndicator"/>-->
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="TableClicked"/>
+                                    </Grid.GestureRecognizers>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
