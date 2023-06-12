@@ -18,7 +18,7 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         get { return viewData; }
         set { viewData = value; OnPropertyChanged(nameof(ViewData)); }
     }
-    private bool isReorderModeActive;
+    //private bool isReorderModeActive;
     private bool isEditModeActive;
     public ListPage()
 	{   
@@ -28,14 +28,7 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         ListName.Text = App.ListTableRepository.GetTableName(App.SelectedTable);
         this.BindingContext = this;
     }
-    //private async Task InitializeDataAsync()
-    //{
-    //    var data = await App.ShoppingListRepository.GetAllAsync();
-    //    ViewData = data.ToObservableCollection();
-    //    itemsList.ItemsSource = ViewData;
-    //    ListName.Text = App.ListTableRepository.GetTableName(App.SelectedTable);
-    //}
-    //-----------BASIC FUNCTIONS SECTION--------// // Performance isn't any better, but negates .NET MAUI shell animation. So, not good. 
+    //-----------BASIC FUNCTIONS SECTION--------//  
     private async void Btn_AddItem(object sender, EventArgs e)
     {
         string result = await DisplayPromptAsync("Add a new item", "", "Save", "Cancel", "Enter item here");
@@ -76,15 +69,18 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         item = parentGrid.BindingContext as ShoppingListItem;
         return item;
     }
-    private void LabelClicked(object sender, EventArgs e)
+    private void ItemClicked(object sender, TappedEventArgs e)
     {   
         if (isEditModeActive)
         {
-            EditItem(GetItemFromSender(sender));
+            Grid grid = sender as Grid;
+            ShoppingListItem item = grid.BindingContext as ShoppingListItem;
+            EditItem(item);
         }
         else
         {
-            ShoppingListItem item = GetItemFromSender(sender);
+            Grid grid = sender as Grid;
+            ShoppingListItem item = grid.BindingContext as ShoppingListItem;
             item.BasketStatus = !item.BasketStatus;
             // Update db
             App.ShoppingListRepository.Update(item);
@@ -102,27 +98,21 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
     }
     //-----------EDIT SECTION-----------------//
     private async void Btn_Edit(object sender, EventArgs e)
-    {   
-        if (isReorderModeActive)
+    {
+        if (isEditModeActive)
         {
-            await CreateToast("Cannot edit whilst moving items!");
+            ExitEditModeButton.IsVisible = false;
+            AddItemButton.IsVisible = true;
+            await CreateSnackbar("Edit mode disabled.");
+            isEditModeActive = false;
         }
         else
         {
-            if (isEditModeActive)
-            {
-                ExitEditModeButton.IsVisible = false;
-                AddItemButton.IsVisible = true;
-                await CreateSnackbar("Edit mode deactivated.");
-                isEditModeActive = false;
-            }
-            else
-            {
-                ExitEditModeButton.IsVisible = true;
-                AddItemButton.IsVisible = false;
-                await CreateSnackbar("Select an item to edit!");
-                isEditModeActive = true;
-            }
+            ExitEditModeButton.IsVisible = true;
+            AddItemButton.IsVisible = false;
+            await CreateSnackbar("Tap an item to edit it!");
+            isEditModeActive = true;
+            itemsList.GestureRecognizers.Clear();
         }
     }
     private async void EditItem(ShoppingListItem item)
@@ -142,61 +132,6 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
         }
     }
     //-----------REORDER SECTION--------------//
-    private async void Btn_Reorder(object sender, EventArgs e)
-    {   
-        if (isEditModeActive)
-        {
-            await CreateToast("Cannot move whilst editing items!");
-        }
-        else
-        {
-            // Display Toast
-            if (isReorderModeActive)
-            {
-                if (selectedReorderItem != null)
-                {
-                    await CreateSnackbar("Changes saved.");
-                }
-                else { await CreateToast("No changes made."); }
-                isReorderModeActive = false; SaveReorderedList(sender, e);
-            }
-            else { await CreateSnackbar("Drag an item to move it!"); isReorderModeActive = true; }
-            //Display Buttons
-            ReorderButtons.IsVisible = !ReorderButtons.IsVisible;
-            AddItemButton.IsVisible = !AddItemButton.IsVisible;
-
-            reorderItemsList.ItemsSource = ViewData;
-            reorderItemsList.IsVisible = !reorderItemsList.IsVisible;
-            itemsList.IsVisible = !itemsList.IsVisible;
-        }
-    }
-    private void ReorderLabelClicked(object sender, EventArgs e)
-    {
-        //Grid buttonGridColumn;
-        //Grid individualItemGrid;
-        //if (selectedReorderItem is Button selectedItem) // Remove color styling if an item is selected
-        //{   
-        //    // For future, IF item is basketstatus = true, set color to basket status color
-        //    buttonGridColumn = selectedItem.Parent as Grid;
-        //    individualItemGrid = buttonGridColumn.Parent as Grid;
-        //    individualItemGrid.BackgroundColor = Color.FromArgb("#6FFFA8"); // Minty Green
-        //    selectedReorderItem = null;
-        //}
-        //if (sender != selectedReorderItem && sender is Button btn)
-        //{
-        //    buttonGridColumn = btn.Parent as Grid;
-        //    individualItemGrid = buttonGridColumn.Parent as Grid;
-        //    individualItemGrid.BackgroundColor = Color.FromArgb("#FD5564"); // Tinder Red
-        //    selectedReorderItem = sender;
-        //}
-    } // NOT USED CURRENTLY / COMMENTED OUT
-    private void SaveReorderedList(object sender, EventArgs e)
-    {
-        // delete all of the old stuff
-        App.ListTableRepository.DeleteForReorder();
-        // Update db
-        App.ShoppingListRepository.AddRange(ViewData);
-    }
     private void ItemDragStarting(object sender, DragStartingEventArgs e)
     {   // Change color of label, if u want
         DragGestureRecognizer dataGestureRecognizer = sender as DragGestureRecognizer;
@@ -211,8 +146,11 @@ public partial class ListPage : ContentPage, INotifyPropertyChanged
 
         ViewData.RemoveAt(selectedItemIndex);
         ViewData.Insert(dropIndex, selectedReorderItem);
+        // delete all of the old stuff
+        App.ListTableRepository.DeleteForReorder();
+        // Update db
+        App.ShoppingListRepository.AddRange(ViewData);
     }
-
     //-----------MISC SECTION----------------//
     private async Task CreateToast(string message)
     {
@@ -291,7 +229,7 @@ public class LabelColorConverter : IValueConverter
     {
         throw new NotImplementedException();
     }
-} // Used for changing label color when it is selected in move/reorder mode
+} // Used for changing label color when it is selected in move/reorder mode. Currently UNUSED
 
 
 

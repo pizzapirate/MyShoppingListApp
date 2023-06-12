@@ -27,18 +27,19 @@
 
                     <Label Grid.Column="0" Text="List" x:Name="ListName" Style="{StaticResource H1Label}"/>
                     <HorizontalStackLayout Grid.Column="1">
-                        <Button Text="Move" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>
+                        <!--<Button Text="Move" Style="{StaticResource AppButton}" Clicked="Btn_Reorder"/>-->
                         <Button Text="Edit" Style="{StaticResource AppButton}" Clicked="Btn_Edit"/>
                         <Button Text="Menu" Style="{StaticResource AppButton}" Clicked="Btn_Menu"/>
                     </HorizontalStackLayout>
                 </Grid>
 
-
+                <!--DATA COLLECTION VIEW-->
                 <CollectionView x:Name="itemsList">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Grid Style="{StaticResource IndividualItemGrid}"
-                                  BackgroundColor="{Binding BasketStatus, Converter={StaticResource LabelColorConverter}}">
+                                  BackgroundColor="{Binding BasketStatus, Converter={StaticResource LabelColorConverter}}"
+                                  >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
@@ -51,33 +52,10 @@
                                             <Binding Path="BasketStatus" Converter="{StaticResource BooleanToStrikethroughConverter}" />
                                         </Label.TextDecorations>
                                     </Label>
-                                    <Button Style="{StaticResource InvisibleButton}" Clicked="LabelClicked" />
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-                
-                <CollectionView x:Name="reorderItemsList" IsVisible="False">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Style="{StaticResource IndividualItemGrid}"
-                                  BackgroundColor="{Binding BasketStatus, Converter={StaticResource LabelColorConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Style="{StaticResource DeleteButton}" HorizontalOptions="Start"/>
-                                <Grid Grid.Column="1">
-                                    <Label Grid.Column="1" Text="{Binding ItemName}" HorizontalOptions="Start" VerticalOptions="Center" Padding="0,0,0,0" 
-                                           Style="{StaticResource IndividualItemLabel}">
-                                        <Label.TextDecorations>
-                                            <Binding Path="BasketStatus" Converter="{StaticResource BooleanToStrikethroughConverter}" />
-                                        </Label.TextDecorations>
-                                    </Label>
-                                    <!--<Button Style="{StaticResource InvisibleButton}" Clicked="ReorderLabelClicked"/>-->
+                                    <!--<Button Style="{StaticResource InvisibleButton}" Clicked="LabelClicked" />-->
                                 </Grid>
                                 <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ItemClicked"/>
                                     <DragGestureRecognizer CanDrag="True" DragStarting="ItemDragStarting"/>
                                     <DropGestureRecognizer AllowDrop="True" Drop="ItemDrop"/>
                                 </Grid.GestureRecognizers>
@@ -85,12 +63,11 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                
             </StackLayout>
         </ScrollView>
+        <!--BUTTONS-->
         <Grid Margin="15" VerticalOptions="End" HorizontalOptions="End">
-            <HorizontalStackLayout x:Name="ReorderButtons" IsVisible="false">
-                <Button Style="{StaticResource AppButton}" Text="Save Changes" Clicked="Btn_Reorder" Padding="10" BackgroundColor="{StaticResource TinderRed}"/>
-            </HorizontalStackLayout>
             <Button Style="{StaticResource AppButton}" x:Name="ExitEditModeButton" Text="Exit Edit Mode" Clicked="Btn_Edit" Padding="10" BackgroundColor="{StaticResource TinderRed}" IsVisible="false"/>
             <Button Style="{StaticResource AddButton}" Clicked="Btn_AddItem" x:Name="AddItemButton"/>
         </Grid>
