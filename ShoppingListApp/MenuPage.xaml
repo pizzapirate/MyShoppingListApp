@@ -27,7 +27,7 @@
                 <Label Grid.Column="0" Text="MiList" Style="{StaticResource H1Label}"/>
                 <HorizontalStackLayout Grid.Column="1">
                     <Button Text="Settings" Style="{StaticResource AppButton}"/>
-                    <Button Text="About" Style="{StaticResource AppButton}" />
+                    <Button Text="About" Style="{StaticResource AppButton}" Clicked="Btn_About"/>
                 </HorizontalStackLayout>
             </Grid>
 

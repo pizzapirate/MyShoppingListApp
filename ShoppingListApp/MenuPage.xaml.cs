@@ -69,6 +69,11 @@ public partial class MenuPage : ContentPage
             await toast.Show(cancellationTokenSource.Token);
         }
     }
+    private void Btn_About(object sender, EventArgs e)
+    {
+        AboutPage next = new();
+        Navigation.PushAsync(next);
+    }
     protected override void OnAppearing()
     {
         base.OnAppearing();

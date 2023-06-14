@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoppingListApp.AboutPage"
+             xmlns:local="clr-namespace:ShoppingListApp" 
+
+             BackgroundColor="{StaticResource CreamBrown}"
+             Shell.NavBarIsVisible="false">
+
+    <ScrollView>
+        <VerticalStackLayout>
+        <!--NAVBAR-->
+            <Grid Style="{StaticResource NavBarGrid}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Text="MiList" Style="{StaticResource H1Label}"/>
+                <HorizontalStackLayout Grid.Column="1">
+                    <!--<Button Text="Settings" Style="{StaticResource AppButton}"/>-->
+                    <Button Text="Back" Style="{StaticResource AppButton}" Clicked="Btn_Back"/>
+                </HorizontalStackLayout>
+            </Grid>
+            <VerticalStackLayout Padding="10">
+                <Label Padding="5,0" FontAttributes="Bold" Text="Why does this app exist?"/>
+                <Label Padding="5,0" Text="I wanted to create a shopping list app that had better functionality for 'one-handed' shoppers. Not sure what I mean? Well, when I do my weekly food shopping, I hold the basket in my left hand, and my phone in my right hand with that week's list."/>
+                <Label Padding="5,0" Text="I used to use Samsung Notes to create my list, however, I often had to use both hands to check items off. So, I thought it would be cool to have an app that I could just tap the item off."/>
+                <Label Padding="5,0" Text="As a software developer, I naturally thought why not create my own, instead of finding one that fits my needs from the endless sea of shopping list apps."/>
+                <Label Padding="5,0" Text="And that is why this app was made! It was also made as a fun method to learn .NET Maui, which is what I used to develop it."/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Padding="10">
+                <Label Padding="5,0" FontAttributes="Bold" Text="Want to get in contact?"/>
+                <Label Padding="5,0" Text="Diddums. That isn't available at this moment in time. I apologise for the inconvenience."/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Padding="10">
+                <Label Padding="5,0" FontAttributes="Bold" Text="More"/>
+                <Label Padding="5,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="If you really want to, you can find me on " />
+                            <Span Text="GitHub" TextColor="{StaticResource PastelPurple}" TextDecorations="Underline"
+                                  FontAttributes="Bold"/>
+                            <Span Text="." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Btn_GitHub"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Text="There, if it pleases you, you can find other janky code projects just like this one."/>
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
